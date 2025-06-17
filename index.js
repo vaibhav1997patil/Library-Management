@@ -53,6 +53,6 @@ app.delete('/books/:id', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`✅ Library App running at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Library App running at http://0.0.0.0:${PORT}`);
 });
