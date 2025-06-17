@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Library Management</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    h1 { text-align: center; }
+    input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+    ul { list-style: none; padding: 0; }
+    li { background: #f4f4f4; margin: 10px 0; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+    .book-info { flex-grow: 1; }
+  </style>
+</head>
+<body>
+  <h1>📚 Library Management</h1>
+
+  <input id="title" placeholder="Book Title" />
+  <input id="author" placeholder="Author Name" />
+  <input id="year" type="number" placeholder="Published Year" />
+  <button onclick="addBook()">➕ Add Book</button>
+
+  <h2>Books</h2>
+  <ul id="book-list"></ul>
+
+  <script>
+    const API = '/books';
+
+    function fetchBooks() {
+      fetch(API)
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById('book-list');
+          list.innerHTML = '';
+          data.forEach(book => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <div class="book-info">${book.title} by ${book.author} (${book.year})</div>
+              <button onclick="deleteBook(${book.id})">🗑️</button>
+            `;
+            list.appendChild(li);
+          });
+        });
+    }
+
+    function addBook() {
+      const title = document.getElementById('title').value;
+      const author = document.getElementById('author').value;
+      const year = document.getElementById('year').value;
+
+      if (!title || !author || !year) {
+        alert("All fields are required!");
+        return;
+      }
+
+      fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, author, year })
+      })
+      .then(res => res.json())
+      .then(() => {
+        document.getElementById('title').value = '';
+        document.getElementById('author').value = '';
+        document.getElementById('year').value = '';
+        fetchBooks();
+      });
+    }
+
+    function deleteBook(id) {
+      fetch(`${API}/${id}`, { method: 'DELETE' })
+        .then(() => fetchBooks());
+    }
+
+    fetchBooks();
+  </script>
+</body>
+</html>
